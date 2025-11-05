@@ -14,7 +14,7 @@ async function get_postgres_max_connections() {
 
 async function get_postgres_used_connections() {
   // Sem proteção de SQL Injection:
-  // `SELECT COUNT(*)::int FROM pg_stat_activity WHERE datname = '${process.env.POSTGRES_DB}';`
+  // const result = await database.query(`SELECT COUNT(*)::int FROM pg_stat_activity WHERE datname = '${process.env.POSTGRES_DB}';`)
   const result = await database.query({
     text: "SELECT COUNT(*)::int FROM pg_stat_activity WHERE datname = $1;",
     values: [process.env.POSTGRES_DB]

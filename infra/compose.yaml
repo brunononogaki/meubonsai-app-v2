@@ -5,7 +5,7 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     env_file:
-      - ../.env
+      - ../.env.development
     ports:
       - "5432:5432"
     restart: unless-stopped    
