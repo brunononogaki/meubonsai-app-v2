@@ -1,6 +1,6 @@
 services:
   database:
-    container_name: database
+    container_name: postgres-dev
     image: postgres:16.0-alpine3.18
     # volumes:
     #   - pgdata:/var/lib/postgresql/data
