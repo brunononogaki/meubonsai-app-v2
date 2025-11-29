@@ -8,7 +8,7 @@ async function query(queryObject) {
     return result;
   } catch (err) {
     console.log(err);
-    throw error; 
+    throw error;
   } finally {
     await client.end();
   }
@@ -31,5 +31,5 @@ export default {
   // query: query,
   // getNewClient: getNewClient,
   query,
-  getNewClient
+  getNewClient,
 };
