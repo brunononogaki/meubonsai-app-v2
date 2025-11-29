@@ -7,7 +7,7 @@ jobs:
     name: Jest Ubuntu
     runs-on: ubuntu-latest
     steps:
-      - uses: action/checkout@v4
+      - uses: actions/checkout@v4
 
       - uses: actions/setup=node@v4
         with:
@@ -16,4 +16,3 @@ jobs:
       - run: npm ci # usa extritamente oq ue está no package-lock.json, o npm install pode pegar pacotes atualizados
 
       - run: npm test
-      
