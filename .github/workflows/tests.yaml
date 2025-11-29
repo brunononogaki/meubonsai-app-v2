@@ -16,3 +16,4 @@ jobs:
       - run: npm ci # usa extritamente oq ue está no package-lock.json, o npm install pode pegar pacotes atualizados
 
       - run: npm test
+      che
