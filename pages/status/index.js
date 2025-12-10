@@ -46,7 +46,7 @@ function DatabaseStatus() {
 
   let databaseVersion = "Carregando...";
   let databaseMaxConnctions = "Carregando...";
-  let databaseOpenedConnections = "Carregando..."
+  let databaseOpenedConnections = "Carregando...";
 
   if (!isLoading && data) {
     databaseVersion = data.dependencies.database.version;
@@ -54,9 +54,11 @@ function DatabaseStatus() {
     databaseOpenedConnections = data.dependencies.database.opened_connections;
   }
 
-  return <>
-    <li>Database Version: {databaseVersion}</li>
-    <li>Max Connections: {databaseMaxConnctions}</li>
-    <li>Opened Connections: {databaseOpenedConnections}</li>
-  </>;
+  return (
+    <>
+      <li>Database Version: {databaseVersion}</li>
+      <li>Max Connections: {databaseMaxConnctions}</li>
+      <li>Opened Connections: {databaseOpenedConnections}</li>
+    </>
+  );
 }
