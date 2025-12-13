@@ -1,4 +1,5 @@
 import database from "infra/database.js";
+import { InternalServerError } from "infra/errors";
 
 async function get_postgres_version() {
   const result = await database.query("SHOW server_version");
@@ -21,15 +22,25 @@ async function get_postgres_used_connections() {
 }
 
 export default async function status(request, response) {
-  const updatedAt = new Date().toISOString();
-  response.status(200).json({
-    updated_at: updatedAt,
-    dependencies: {
-      database: {
-        version: await get_postgres_version(),
-        max_connections: await get_postgres_max_connections(),
-        opened_connections: await get_postgres_used_connections(),
+  try {
+    const updatedAt = new Date().toISOString();
+    response.status(200).json({
+      updated_at: updatedAt,
+      dependencies: {
+        database: {
+          version: await get_postgres_version(),
+          max_connections: await get_postgres_max_connections(),
+          opened_connections: await get_postgres_used_connections(),
+        },
       },
-    },
-  });
+    });
+  } catch (err) {
+    const publicErrorObject = new InternalServerError({
+      cause: err,
+    });
+    console.log("\n Erro dentro do catch do controller:");
+    console.error(publicErrorObject);
+
+    response.status(500).json(publicErrorObject);
+  }
 }
