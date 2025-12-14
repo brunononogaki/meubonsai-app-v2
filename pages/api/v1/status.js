@@ -1,5 +1,12 @@
+import { createRouter } from "next-connect";
 import database from "infra/database.js";
-import { InternalServerError } from "infra/errors";
+import controller from "infra/controller.js";
+
+const router = createRouter();
+
+router.get(getHandler);
+
+export default router.handler(controller.errorHandler);
 
 async function get_postgres_version() {
   const result = await database.query("SHOW server_version");
@@ -12,8 +19,6 @@ async function get_postgres_max_connections() {
 }
 
 async function get_postgres_used_connections() {
-  // Sem proteção de SQL Injection:
-  // const result = await database.query(`SELECT COUNT(*)::int FROM pg_stat_activity WHERE datname = '${process.env.POSTGRES_DB}';`)
   const result = await database.query({
     text: "SELECT COUNT(*)::int FROM pg_stat_activity WHERE datname = $1;",
     values: [process.env.POSTGRES_DB],
@@ -21,26 +26,16 @@ async function get_postgres_used_connections() {
   return result.rows[0].count;
 }
 
-export default async function status(request, response) {
-  try {
-    const updatedAt = new Date().toISOString();
-    response.status(200).json({
-      updated_at: updatedAt,
-      dependencies: {
-        database: {
-          version: await get_postgres_version(),
-          max_connections: await get_postgres_max_connections(),
-          opened_connections: await get_postgres_used_connections(),
-        },
+async function getHandler(request, response) {
+  const updatedAt = new Date().toISOString();
+  response.status(200).json({
+    updated_at: updatedAt,
+    dependencies: {
+      database: {
+        version: await get_postgres_version(),
+        max_connections: await get_postgres_max_connections(),
+        opened_connections: await get_postgres_used_connections(),
       },
-    });
-  } catch (err) {
-    const publicErrorObject = new InternalServerError({
-      cause: err,
-    });
-    console.log("\n Erro dentro do catch do controller:");
-    console.error(publicErrorObject);
-
-    response.status(500).json(publicErrorObject);
-  }
+    },
+  });
 }
