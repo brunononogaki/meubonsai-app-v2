@@ -6,7 +6,7 @@ const defaultMigrationOptions = {
   dryRun: true,
   dir: resolve("infra", "migrations"),
   verbose: false,
-  log: () => {}, // gambiarra para não exibir os logs 
+  log: () => {}, // gambiarra para não exibir os logs
   direction: "up",
   migrationsTable: "pgmigrations",
 };

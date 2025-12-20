@@ -1,4 +1,3 @@
-import database from "infra/database.js";
 import orchestrator from "tests/orchestrator";
 import { version as uuidVersion } from "uuid";
 
@@ -77,8 +76,8 @@ describe("POST to /api/v1/users", () => {
         name: "ValidationError",
         message: "O email informado já está sendo utilizado.",
         action: "Utilize outro email para realizar o cadastro.",
-        status_code: 400
-      })
+        status_code: 400,
+      });
     });
     test("With duplicated username", async () => {
       const userToBeCreated1 = {
@@ -116,8 +115,8 @@ describe("POST to /api/v1/users", () => {
         name: "ValidationError",
         message: "O username informado já está sendo utilizado.",
         action: "Utilize outro username para realizar o cadastro.",
-        status_code: 400
-      })
-    });    
+        status_code: 400,
+      });
+    });
   });
 });
