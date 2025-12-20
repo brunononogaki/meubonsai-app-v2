@@ -5,7 +5,8 @@ import { resolve } from "node:path";
 const defaultMigrationOptions = {
   dryRun: true,
   dir: resolve("infra", "migrations"),
-  verbose: true,
+  verbose: false,
+  log: () => {}, // gambiarra para não exibir os logs 
   direction: "up",
   migrationsTable: "pgmigrations",
 };
