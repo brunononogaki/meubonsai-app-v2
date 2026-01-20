@@ -88,13 +88,16 @@ describe("POST to /api/v1/sessions", () => {
         email: "correct.email@email.com",
         password: "senha-correta",
       });
+
+      const activatedUser = await orchestrator.activateUser(createdUser);
+
       const response = await fetch("http://localhost:3000/api/v1/sessions", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          email: createdUser.email,
+          email: activatedUser.email,
           password: "senha-correta",
         }),
       });

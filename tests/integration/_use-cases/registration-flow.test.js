@@ -2,6 +2,7 @@ import orchestrator from "tests/orchestrator.js";
 import activation from "models/activation";
 import webserver from "infra/webserver";
 import user from "models/user";
+import { version as uuidVersion } from "uuid";
 
 beforeAll(async () => {
   await orchestrator.waitForAllServices();
@@ -13,6 +14,7 @@ beforeAll(async () => {
 describe("Use case: Registration Flow (all successful)", () => {
   let createUserResponseBody;
   let activationTokenObject;
+  let createSessionsResponseBody;
 
   test("Create user account", async () => {
     const createUserResponse = await fetch(
@@ -75,8 +77,56 @@ describe("Use case: Registration Flow (all successful)", () => {
     expect(Date.parse(activationResposeBody.used_at)).not.toBeNull();
 
     const activatedUser = await user.findOneByUsername("RegistrationFlow");
-    expect(activatedUser.features).toEqual(["create:session"]);
+    expect(activatedUser.features).toEqual(["create:session", "read:session"]);
   });
-  test("Login", async () => {});
-  test("Get user information", async () => {});
+  test("Login", async () => {
+    const createSessionResponse = await fetch(
+      "http://localhost:3000/api/v1/sessions",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: createUserResponseBody.email,
+          password: "senha123",
+        }),
+      },
+    );
+
+    expect(createSessionResponse.status).toBe(201);
+    createSessionsResponseBody = await createSessionResponse.json();
+    expect(createSessionsResponseBody).toEqual({
+      id: createSessionsResponseBody.id,
+      token: createSessionsResponseBody.token,
+      user_id: createUserResponseBody.id,
+      created_at: createSessionsResponseBody.created_at,
+      updated_at: createSessionsResponseBody.updated_at,
+      expires_at: createSessionsResponseBody.expires_at,
+    });
+  });
+  test("Get user information", async () => {
+    const responseUserInformation = await fetch(
+      "http://localhost:3000/api/v1/user",
+      {
+        headers: {
+          Cookie: `session_id=${createSessionsResponseBody.token}`,
+        },
+      },
+    );
+    expect(responseUserInformation.status).toBe(200);
+    const responseUserInformationBody = await responseUserInformation.json();
+    expect(responseUserInformationBody).toEqual({
+      id: createUserResponseBody.id,
+      username: "RegistrationFlow",
+      email: createUserResponseBody.email,
+      features: ["create:session", "read:session"],
+      password: createUserResponseBody.password,
+      created_at: createUserResponseBody.created_at,
+      updated_at: responseUserInformationBody.updated_at,
+    });
+    expect(uuidVersion(responseUserInformationBody.id)).toBe(4);
+    expect(Date.parse(responseUserInformationBody.created_at)).not.toBeNaN();
+    expect(Date.parse(responseUserInformationBody.created_at)).not.toBeNaN();
+  });
 });

@@ -5,6 +5,7 @@ import database from "infra/database";
 import migrator from "models/migrator.js";
 import user from "models/user.js";
 import session from "models/session.js";
+import activation from "models/activation.js";
 
 async function waitForAllServices() {
   await waitForWebServer();
@@ -58,6 +59,10 @@ async function createUser(userObject) {
   });
 }
 
+async function activateUser(userObject) {
+  return await activation.activateUserByUserId(userObject.id);
+}
+
 async function createSession(userId) {
   return await session.create(userId);
 }
@@ -105,6 +110,7 @@ const orchestrator = {
   clearDatabase,
   runPendingMigrations,
   createUser,
+  activateUser,
   createSession,
   deleteAllEmails,
   getLastEmail,
