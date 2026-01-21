@@ -21,7 +21,7 @@ async function postHandler(request, response) {
     userInputValues.email,
     userInputValues.password,
   );
-  
+
   if (!authorization.can(authenticatedUser, "create:session")) {
     throw new ForbiddenError({
       message: "Você não possui permissão para fazer login.",
